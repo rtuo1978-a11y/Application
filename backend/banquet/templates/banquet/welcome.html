@@ -1,0 +1,47 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Apotheosis ACE - Bienvenue{% endblock %}
+
+{% block content %}
+<div class="hero-bg">
+    <div class="hero-overlay flex flex-col">
+        <div class="flex-1 flex flex-col items-center justify-center px-6 py-12">
+            <div class="max-w-4xl mx-auto text-center space-y-8">
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-heading font-light text-gold tracking-tight" data-testid="main-title">
+                    Apotheosis ACE
+                </h1>
+                
+                <p class="text-xl sm:text-2xl verse-text font-light max-w-2xl mx-auto" style="color: var(--muted);">
+                    « Je suis le pain de vie. Celui qui vient à moi n'aura jamais faim. »
+                </p>
+                
+                <p class="text-base sm:text-lg text-white/80 max-w-xl mx-auto">
+                    Bienvenue à notre banquet sacré. Inscrivez-vous pour partager ce moment de grâce et de communion.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
+                    <a href="{% url 'register' %}" class="btn-primary" data-testid="register-button">
+                        <i data-lucide="book-open" width="20" height="20"></i>
+                        S'inscrire au Banquet
+                    </a>
+                    
+                    <a href="{% url 'gallery' %}" class="btn-secondary" data-testid="gallery-button">
+                        <i data-lucide="image" width="20" height="20"></i>
+                        Galerie Sacrée
+                    </a>
+                </div>
+                
+                <div class="pt-12">
+                    <a href="{% url 'admin_login' %}" class="text-sm text-white/50 hover:text-gold transition-colors" data-testid="admin-link">
+                        Espace Administrateur
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="py-6 text-center text-sm" style="color: var(--muted);">
+            <p class="verse-text">« Heureux les invités au festin des noces de l'Agneau » - Apocalypse 19:9</p>
+        </footer>
+    </div>
+</div>
+{% endblock %}

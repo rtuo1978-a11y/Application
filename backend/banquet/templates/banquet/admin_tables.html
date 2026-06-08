@@ -1,0 +1,98 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Gestion des tables - Apotheosis ACE{% endblock %}
+
+{% block content %}
+{% include 'banquet/_admin_nav.html' %}
+
+<div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-light text-gold tracking-tight" data-testid="admin-tables-title">
+            Gestion des tables
+        </h1>
+        <p class="text-sm mt-2" style="color: var(--muted);">
+            Créez les tables du banquet en spécifiant leur numéro et le nombre de places.
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Formulaire de création -->
+    <div class="glass-surface rounded-2xl p-6 space-y-4">
+        <h2 class="text-2xl font-heading text-gold flex items-center gap-2">
+            <i data-lucide="plus-circle" width="24" height="24"></i>
+            Créer une nouvelle table
+        </h2>
+        <form method="post" class="space-y-4" data-testid="create-table-form">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.table_number.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                        {{ form.table_number.label }} *
+                    </label>
+                    {{ form.table_number }}
+                    {% if form.table_number.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.table_number.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.places.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                        {{ form.places.label }} *
+                    </label>
+                    {{ form.places }}
+                    {% if form.places.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.places.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" class="btn-primary" data-testid="create-table-button">
+                <i data-lucide="plus" width="18" height="18"></i>
+                Créer la table
+            </button>
+        </form>
+    </div>
+
+    <!-- Liste des tables -->
+    <div class="space-y-4">
+        <h2 class="text-2xl font-heading text-gold">Tables existantes ({{ tables.count }})</h2>
+        
+        {% if tables %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-testid="tables-list">
+                {% for table in tables %}
+                    <div class="card flex flex-col justify-between" data-testid="table-item-{{ forloop.counter0 }}">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-3xl font-heading text-gold">N° {{ table.table_number }}</span>
+                                <i data-lucide="table" width="24" height="24" style="color: var(--muted);"></i>
+                            </div>
+                            <p class="text-sm" style="color: var(--muted);">
+                                <strong class="text-white">{{ table.places }}</strong> place(s)
+                            </p>
+                            <p class="text-xs mt-1" style="color: var(--muted);">
+                                {{ table.guests.count }} invité(s) inscrit(s)
+                            </p>
+                        </div>
+                        <form method="post" action="{% url 'admin_delete_table' table.id %}" class="mt-4" 
+                              onsubmit="return confirm('Supprimer la table {{ table.table_number }} et toutes ses inscriptions ?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-danger w-full" data-testid="delete-table-{{ forloop.counter0 }}">
+                                <i data-lucide="trash-2" width="14" height="14" class="inline"></i>
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card text-center py-12">
+                <i data-lucide="inbox" width="48" height="48" class="mx-auto mb-4" style="color: var(--muted);"></i>
+                <p style="color: var(--muted);">Aucune table créée pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

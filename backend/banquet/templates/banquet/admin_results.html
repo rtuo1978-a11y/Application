@@ -1,0 +1,97 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Résultats - Apotheosis ACE{% endblock %}
+
+{% block content %}
+{% include 'banquet/_admin_nav.html' %}
+
+<div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-light text-gold tracking-tight" data-testid="admin-results-title">
+            Résultats des commandes
+        </h1>
+        <p class="text-sm verse-text mt-2" style="color: var(--muted);">
+            « Tout est prêt, venez aux noces » - Matthieu 22:4
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if results %}
+        <div class="space-y-6" data-testid="admin-results-panel">
+            {% for result in results %}
+                <div class="glass-surface rounded-2xl p-6" data-testid="result-table-{{ forloop.counter0 }}">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-gold/30">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gold/10 border-2 border-gold flex items-center justify-center">
+                                <span class="text-xl font-heading text-gold">{{ result.table.table_number }}</span>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-heading text-gold">Table {{ result.table.table_number }}</h2>
+                                <p class="text-xs" style="color: var(--muted);">
+                                    {{ result.table.places }} place(s) - {{ result.guests|length }} invité(s)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if result.guests %}
+                        <div class="space-y-3">
+                            {% for item in result.guests %}
+                                <div class="flex items-start gap-4 p-3 rounded-lg" style="background-color: rgba(0, 0, 0, 0.2);">
+                                    <span class="text-gold font-heading text-lg font-semibold flex-shrink-0">
+                                        {{ forloop.counter }}.
+                                    </span>
+                                    <div class="flex-1">
+                                        <p class="text-white font-medium">{{ item.guest.name }}</p>
+                                        {% if item.order %}
+                                            <p class="text-sm mt-1" style="color: var(--muted);">
+                                                <i data-lucide="utensils" width="14" height="14" class="inline"></i>
+                                                Plat choisi : <strong class="text-gold">{{ item.order.dish.name }}</strong>
+                                                {% if item.order.is_locked %}
+                                                    <span class="ml-2 inline-block text-xs px-2 py-0.5 rounded-full" 
+                                                          style="background-color: rgba(34, 197, 94, 0.15); color: rgb(74, 222, 128);">
+                                                        Confirmé
+                                                    </span>
+                                                {% else %}
+                                                    <span class="ml-2 inline-block text-xs px-2 py-0.5 rounded-full"
+                                                          style="background-color: rgba(234, 179, 8, 0.15); color: rgb(250, 204, 21);">
+                                                        En attente ({{ item.order.seconds_remaining }}s)
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+                                        {% else %}
+                                            <p class="text-sm italic mt-1" style="color: var(--muted);">
+                                                Aucun plat sélectionné
+                                            </p>
+                                        {% endif %}
+                                        {% if item.guest.email %}
+                                            <p class="text-xs mt-1" style="color: var(--muted);">
+                                                <i data-lucide="mail" width="12" height="12" class="inline"></i>
+                                                {{ item.guest.email }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center py-6 italic" style="color: var(--muted);">
+                            Aucun invité inscrit à cette table
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card text-center py-12">
+            <i data-lucide="inbox" width="48" height="48" class="mx-auto mb-4" style="color: var(--muted);"></i>
+            <p style="color: var(--muted);">Aucune donnée à afficher. Commencez par créer des tables.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Inscription - Apotheosis ACE{% endblock %}
+
+{% block content %}
+<div class="hero-bg">
+    <div class="hero-overlay flex flex-col items-center justify-center px-6 py-12">
+        <div class="w-full max-w-md">
+            <a href="{% url 'welcome' %}" class="inline-flex items-center gap-2 text-gold hover:text-yellow-200 mb-8 transition-colors" data-testid="back-button">
+                <i data-lucide="arrow-left" width="20" height="20"></i>
+                Retour
+            </a>
+
+            <div class="glass-surface rounded-2xl p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-heading font-light text-gold" data-testid="registration-title">
+                        Inscription
+                    </h2>
+                    <p class="text-sm verse-text" style="color: var(--muted);">
+                        « Venez, car tout est prêt » - Luc 14:17
+                    </p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" class="space-y-4" data-testid="guest-registration-form">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                            {{ form.name.label }} *
+                        </label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <p class="text-red-400 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <p class="text-red-400 text-sm mt-1">{{ form.email.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.table.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                            {{ form.table.label }} *
+                        </label>
+                        {{ form.table }}
+                        {% if form.table.errors %}
+                            <p class="text-red-400 text-sm mt-1">{{ form.table.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full" data-testid="submit-registration-button">
+                        Continuer vers le menu
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    select.form-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23D4AF37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 12px;
+        padding-right: 2.5rem;
+    }
+    select.form-input option {
+        background-color: var(--fir-green);
+        color: white;
+    }
+</style>
+{% endblock %}

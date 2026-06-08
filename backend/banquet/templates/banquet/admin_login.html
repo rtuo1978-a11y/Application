@@ -1,0 +1,55 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Connexion Admin - Apotheosis ACE{% endblock %}
+
+{% block content %}
+<div class="hero-bg">
+    <div class="hero-overlay flex flex-col items-center justify-center px-6 py-12">
+        <div class="w-full max-w-md">
+            <a href="{% url 'welcome' %}" class="inline-flex items-center gap-2 text-gold hover:text-yellow-200 mb-8 transition-colors" data-testid="admin-back-button">
+                <i data-lucide="arrow-left" width="20" height="20"></i>
+                Retour
+            </a>
+
+            <div class="glass-surface rounded-2xl p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-heading font-light text-gold" data-testid="admin-login-title">
+                        Connexion Admin
+                    </h2>
+                    <p class="text-sm verse-text" style="color: var(--muted);">
+                        « Tu es le berger du troupeau »
+                    </p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" class="space-y-4" data-testid="admin-login-form">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                            {{ form.password.label }}
+                        </label>
+                        {{ form.password }}
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full" data-testid="admin-login-button">
+                        Se connecter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

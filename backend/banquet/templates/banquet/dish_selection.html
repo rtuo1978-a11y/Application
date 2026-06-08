@@ -1,0 +1,137 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Choix du plat - Apotheosis ACE{% endblock %}
+
+{% block content %}
+<div class="hero-bg">
+    <div class="hero-overlay py-12 px-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <a href="{% url 'welcome' %}" class="inline-flex items-center gap-2 text-gold hover:text-yellow-200 transition-colors" data-testid="back-to-home-button">
+                <i data-lucide="arrow-left" width="20" height="20"></i>
+                Retour à l'accueil
+            </a>
+
+            <div class="glass-surface rounded-2xl p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-heading font-light text-gold" data-testid="menu-title">
+                        Menu du Banquet
+                    </h2>
+                    <p class="text-sm" style="color: var(--muted);">
+                        Bienvenue <strong class="text-white">{{ guest.name }}</strong> — Table <strong class="text-gold">{{ guest.table.table_number }}</strong>
+                    </p>
+                    <p class="text-xs verse-text" style="color: var(--muted);">
+                        « Goûtez et voyez combien l'Éternel est bon » - Psaume 34:9
+                    </p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if existing_order %}
+                    {% if existing_order.is_locked %}
+                        <div class="alert alert-success" data-testid="locked-message">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="check-circle" width="24" height="24"></i>
+                                <div>
+                                    <p class="font-medium">Votre choix est confirmé</p>
+                                    <p class="text-sm mt-1">Plat sélectionné : <strong>{{ existing_order.dish.name }}</strong></p>
+                                    <p class="text-xs mt-1 verse-text">La période de modification (2 minutes) est terminée.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning" data-testid="timer-display">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="clock" width="24" height="24"></i>
+                                <div class="flex-1">
+                                    <p class="font-medium">Temps restant pour modifier votre plat</p>
+                                    <p class="text-3xl font-heading text-gold" id="countdown-timer" data-seconds="{{ existing_order.seconds_remaining }}">
+                                        --:--
+                                    </p>
+                                    <p class="text-xs mt-1">Plat actuel : <strong>{{ existing_order.dish.name }}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" data-testid="dish-selection-form" {% if existing_order.is_locked %}class="opacity-60 pointer-events-none"{% endif %}>
+                    {% csrf_token %}
+                    
+                    <h3 class="text-xl font-heading text-white mb-4">
+                        {% if existing_order %}Modifier votre choix{% else %}Choisissez votre plat{% endif %}
+                    </h3>
+                    
+                    <div class="grid gap-4">
+                        {% for dish in dishes %}
+                            <label class="card cursor-pointer block" data-testid="dish-option-{{ forloop.counter0 }}">
+                                <input type="radio" name="dish_id" value="{{ dish.id }}"
+                                       class="sr-only peer"
+                                       {% if existing_order and existing_order.dish.id == dish.id %}checked{% endif %}>
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold">
+                                            {% if existing_order and existing_order.dish.id == dish.id %}
+                                                <div class="w-2.5 h-2.5 rounded-full bg-gold"></div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-lg font-semibold text-gold mb-1">{{ dish.name }}</h4>
+                                        {% if dish.description %}
+                                            <p class="text-sm" style="color: var(--muted);">{{ dish.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {% if not existing_order.is_locked %}
+                        <button type="submit" class="btn-primary w-full mt-6" data-testid="confirm-dish-button">
+                            {% if existing_order %}Modifier mon choix{% else %}Confirmer mon choix{% endif %}
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if existing_order and not existing_order.is_locked %}
+<script>
+    // Décompte du timer de 2 minutes
+    (function() {
+        const timerEl = document.getElementById('countdown-timer');
+        if (!timerEl) return;
+        
+        let secondsLeft = parseInt(timerEl.dataset.seconds, 10);
+        
+        function formatTime(s) {
+            const mins = Math.floor(s / 60);
+            const secs = s % 60;
+            return `${mins}:${String(secs).padStart(2, '0')}`;
+        }
+        
+        function tick() {
+            if (secondsLeft <= 0) {
+                timerEl.textContent = '0:00';
+                // Recharger la page pour voir le statut verrouillé
+                setTimeout(() => window.location.reload(), 500);
+                return;
+            }
+            timerEl.textContent = formatTime(secondsLeft);
+            secondsLeft -= 1;
+        }
+        
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+{% endif %}
+{% endblock %}

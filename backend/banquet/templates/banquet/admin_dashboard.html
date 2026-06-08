@@ -1,0 +1,73 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Tableau de bord - Apotheosis ACE{% endblock %}
+
+{% block content %}
+{% include 'banquet/_admin_nav.html' %}
+
+<div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <div class="space-y-2">
+        <h1 class="text-3xl sm:text-4xl font-heading font-light text-gold tracking-tight" data-testid="admin-dashboard-title">
+            Tableau de bord
+        </h1>
+        <p class="text-sm verse-text" style="color: var(--muted);">
+            « Celui qui a commencé en vous une bonne œuvre la mènera à son accomplissement » - Philippiens 1:6
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card text-center" data-testid="stat-tables">
+            <i data-lucide="table" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_tables }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Table(s)</p>
+        </div>
+        <div class="card text-center" data-testid="stat-dishes">
+            <i data-lucide="utensils" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_dishes }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Plat(s) au menu</p>
+        </div>
+        <div class="card text-center" data-testid="stat-guests">
+            <i data-lucide="users" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_guests }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Invité(s)</p>
+        </div>
+        <div class="card text-center" data-testid="stat-orders">
+            <i data-lucide="check-circle" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_orders }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Commande(s)</p>
+        </div>
+    </div>
+
+    <div class="gold-divider"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="{% url 'admin_tables' %}" class="card block" data-testid="card-tables">
+            <i data-lucide="plus-circle" width="32" height="32" class="text-gold mb-4"></i>
+            <h3 class="text-xl font-heading text-gold mb-2">Gérer les tables</h3>
+            <p class="text-sm" style="color: var(--muted);">
+                Créer, modifier ou supprimer les tables du banquet.
+            </p>
+        </a>
+        <a href="{% url 'admin_menu' %}" class="card block" data-testid="card-menu">
+            <i data-lucide="chef-hat" width="32" height="32" class="text-gold mb-4"></i>
+            <h3 class="text-xl font-heading text-gold mb-2">Gérer le menu</h3>
+            <p class="text-sm" style="color: var(--muted);">
+                Ajouter et modifier les plats proposés aux invités.
+            </p>
+        </a>
+        <a href="{% url 'admin_results' %}" class="card block" data-testid="card-results">
+            <i data-lucide="bar-chart-3" width="32" height="32" class="text-gold mb-4"></i>
+            <h3 class="text-xl font-heading text-gold mb-2">Voir les résultats</h3>
+            <p class="text-sm" style="color: var(--muted);">
+                Consulter les commandes par table en ordre numérique.
+            </p>
+        </a>
+    </div>
+</div>
+{% endblock %}
