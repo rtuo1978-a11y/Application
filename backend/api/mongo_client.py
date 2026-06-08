@@ -9,7 +9,7 @@ class MongoDB:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(MongoDB, cls).__new__(cls)
-            cls._client = MongoClient(settings.MONGO_URL)
+            cls._client = MongoClient(settings.MONGO_URL, tz_aware=True)
             cls._db = cls._client[settings.DB_NAME]
         return cls._instance
 

@@ -122,6 +122,8 @@ def create_table_view(request):
         
         return JsonResponse(table, status=201)
     except Exception as e:
+        if 'Non authentifié' in str(e) or 'Token' in str(e):
+            return JsonResponse({'detail': str(e)}, status=401)
         return JsonResponse({'detail': str(e)}, status=500)
 
 @csrf_exempt
@@ -160,6 +162,8 @@ def create_dish_view(request):
         
         return JsonResponse(dish, status=201)
     except Exception as e:
+        if 'Non authentifié' in str(e) or 'Token' in str(e):
+            return JsonResponse({'detail': str(e)}, status=401)
         return JsonResponse({'detail': str(e)}, status=500)
 
 @csrf_exempt
@@ -305,6 +309,8 @@ def admin_results_view(request):
         
         return JsonResponse(results, safe=False)
     except Exception as e:
+        if 'Non authentifié' in str(e) or 'Token' in str(e):
+            return JsonResponse({'detail': str(e)}, status=401)
         return JsonResponse({'detail': str(e)}, status=500)
 
 @csrf_exempt
