@@ -1,0 +1,77 @@
+{
+  "summary": "Tested Apotheosis ACE banquet app (Django + MongoDB + React). 21/22 backend tests pass. Critical backend bug found in order update (2-min lock window). Welcome, Gallery, Guest registration pages render correctly with proper French verses/gold-green theme. Admin login UI did not appear to redirect to dashboard after submit in browser test.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "PUT /api/orders/<order_id>/update",
+        "issue": "Returns 500: \"can't compare offset-naive and offset-aware datetimes\". `locked_at` is stored as timezone-aware UTC datetime but MongoDB returns naive datetime on read; comparison with `datetime.now(timezone.utc)` raises TypeError. This breaks the entire 2-minute modification feature - guests cannot modify their dish selection.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "POST /api/tables/create (unauth)",
+        "issue": "Unauthenticated calls return 500 (with exception detail leaked) instead of 401/403. The `get_current_user` exception is caught in a broad `except Exception as e: return 500`. Should return 401 explicitly and avoid leaking internal exception messages."
+      },
+      {
+        "endpoint": "GET /api/auth/me",
+        "issue": "Same pattern - returns 401 only by coincidence because the outer except handles it. Refactor to use proper HTTP status codes consistently across admin-protected endpoints."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AdminLoginPage",
+        "issue": "After filling admin@apotheosis.com / apotheosis2026 and clicking 'Se connecter', the URL remained at /admin/login and dashboard content was not detected. Backend login API works (verified via pytest). Possible issue: client may not be sending credentials with fetch (missing credentials: 'include') or not handling cookie-based session correctly, or redirect logic missing.",
+        "selector": "/admin/login form submit",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Admin login -> dashboard redirect",
+        "issue": "Login appears not to navigate to dashboard. Backend sets httpOnly cookie successfully. Verify frontend axios/fetch uses withCredentials:true and React Router navigates after success.",
+        "affected_selectors": ["AdminLoginPage submit handler"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "All pages",
+        "issues": [
+          "Gold/green/black/white theme correctly applied with Cormorant Garamond + Outfit fonts. French verses present on every page. Château background image visible. Design looks good."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX CRITICAL: In /app/backend/api/views.py update_order_view (line 259) - normalize datetimes before compare. Either store locked_at as naive UTC, or replace tzinfo on read: `locked_at = order['locked_at'].replace(tzinfo=timezone.utc) if order['locked_at'].tzinfo is None else order['locked_at']`",
+    "FIX HIGH: Verify AdminLoginPage actually navigates after successful login. Ensure axios/fetch uses credentials:'include' or withCredentials:true so httpOnly cookie is set on the browser. Add navigate('/admin/dashboard') after successful POST /api/auth/login.",
+    "Improve auth error handling: return 401 explicitly when token missing/invalid (currently returns 500 with leaked exception messages on protected endpoints).",
+    "Tests created at /app/backend/tests/backend_test.py for regression."
+  ],
+  "critical_code_review_comments": [
+    "views.py uses broad try/except returning 500 on auth failures - leaks internal exception text and obscures real error codes",
+    "Datetime tz handling is inconsistent: writes are tz-aware, reads from MongoDB are tz-naive. Centralize a helper to normalize tz on read.",
+    "register_guest_view allows unlimited duplicate guests with same name+table (no uniqueness check); could be intentional but worth noting",
+    "create_order_view returns datetime objects which Django serializes OK, but ensure frontend parses ISO strings correctly",
+    "No CSRF protection on cookie-auth endpoints (all are @csrf_exempt). For production add CSRF-token header check on state-changing requests."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {
+    "backend": "95% (21/22)",
+    "frontend": "75% (3/4 main pages verified; admin login redirect failed)"
+  },
+  "test_credentials": "admin@apotheosis.com / apotheosis2026 (verified working at backend /api/auth/login)",
+  "seed_data_creation": "Created test tables 9001/9002/9003, test dish 'TEST_Poulet Rôti', test guest 'TEST_Jean' with order on table 9003. Data persists in MongoDB.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "After main agent fixes (1) tz comparison in update_order_view and (2) admin login redirect, retest: PUT /api/orders/<id>/update should return 200, and frontend /admin/login should navigate to dashboard. Use existing test file /app/backend/tests/backend_test.py. Test data with TEST_ prefix is in DB.",
+  "rca of the issue": "Order update 500 RCA: MongoDB's pymongo by default returns datetime objects without tzinfo (naive) even when written with timezone.utc. Line 259 `if now > order['locked_at']` mixes aware (now) with naive (locked_at) -> TypeError. Fix: use MongoClient(tz_aware=True) in mongo_client.py, OR normalize on read: `locked_at = order['locked_at'].replace(tzinfo=timezone.utc)`. Reproduction: register guest -> create order -> immediately PUT /api/orders/<id>/update -> observe 500."
+}
