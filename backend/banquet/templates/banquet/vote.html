@@ -1,0 +1,120 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Vote Présidentiel ACE - Apotheosis ACE{% endblock %}
+
+{% block content %}
+<div class="hero-bg">
+    <div class="hero-overlay py-12 px-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <a href="{% url 'welcome' %}" class="inline-flex items-center gap-2 text-gold hover:text-yellow-200 transition-colors" data-testid="back-from-vote-button">
+                <i data-lucide="arrow-left" width="20" height="20"></i>
+                Retour
+            </a>
+
+            <div class="text-center space-y-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold/10 border-2 border-gold mb-4">
+                    <i data-lucide="crown" width="32" height="32" class="text-gold"></i>
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-light text-gold tracking-tight" data-testid="vote-title">
+                    Élection du Leader ACE
+                </h1>
+                <p class="text-lg verse-text max-w-2xl mx-auto" style="color: var(--muted);">
+                    « Que celui qui est le plus grand parmi vous soit votre serviteur » - Matthieu 23:11
+                </p>
+                <p class="text-sm" style="color: var(--muted);">
+                    Choisissez avec discernement et prière le prochain leader de notre communauté.
+                </p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% if has_voted %}
+                <div class="glass-surface rounded-2xl p-8 text-center space-y-4" data-testid="already-voted">
+                    <i data-lucide="check-circle-2" width="48" height="48" class="mx-auto text-green-400"></i>
+                    <h2 class="text-2xl font-heading text-gold">Votre vote a été enregistré</h2>
+                    <p class="text-white">
+                        Vous avez voté pour <strong class="text-gold">{{ user_vote.candidate.name }}</strong>
+                    </p>
+                    <p class="text-sm verse-text" style="color: var(--muted);">
+                        « L'Éternel établit celui qu'il a choisi » - 1 Samuel 16:13
+                    </p>
+                    <p class="text-xs mt-4" style="color: var(--muted);">
+                        Les résultats seront annoncés par l'administrateur.
+                    </p>
+                </div>
+            {% elif candidates %}
+                <form method="post" action="{% url 'cast_vote' %}" data-testid="vote-form">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        {% for candidate in candidates %}
+                            <label class="cursor-pointer block group" data-testid="candidate-card-{{ forloop.counter0 }}">
+                                <input type="radio" name="candidate_id" value="{{ candidate.id }}" class="sr-only peer" required>
+                                <div class="glass-surface rounded-2xl overflow-hidden border-2 border-transparent peer-checked:border-gold transition-all duration-300 hover:scale-105">
+                                    <div class="aspect-square overflow-hidden bg-black/40">
+                                        {% if candidate.photo %}
+                                            <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" 
+                                                 class="w-full h-full object-cover">
+                                        {% else %}
+                                            <div class="w-full h-full flex items-center justify-center">
+                                                <i data-lucide="user" width="64" height="64" style="color: var(--muted);"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="p-5 space-y-3">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <h3 class="text-xl font-heading text-gold">{{ candidate.name }}</h3>
+                                            <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold">
+                                                <div class="w-3 h-3 rounded-full bg-gold opacity-0 peer-checked:opacity-100"></div>
+                                            </div>
+                                        </div>
+                                        {% if candidate.description %}
+                                            <p class="text-sm" style="color: var(--muted);">{{ candidate.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="glass-surface rounded-2xl p-6 text-center space-y-4">
+                        <p class="text-sm" style="color: var(--muted);">
+                            ⚠️ Vous ne pouvez voter qu'une seule fois. Choisissez avec soin.
+                        </p>
+                        <button type="submit" class="btn-primary" data-testid="submit-vote-button">
+                            <i data-lucide="vote" width="20" height="20"></i>
+                            Confirmer mon vote
+                        </button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="glass-surface rounded-2xl p-12 text-center space-y-4">
+                    <i data-lucide="users" width="48" height="48" class="mx-auto" style="color: var(--muted);"></i>
+                    <h2 class="text-2xl font-heading text-gold">Aucun candidat pour le moment</h2>
+                    <p style="color: var(--muted);">
+                        Les candidats à l'élection du leader ACE seront bientôt présentés.
+                    </p>
+                    <p class="text-sm verse-text" style="color: var(--muted);">
+                        « Attendez l'Éternel, prenez courage » - Psaume 27:14
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style pour la carte de candidat sélectionnée */
+    label input[type="radio"]:checked + div {
+        border-color: var(--gold);
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+    }
+    label input[type="radio"]:checked + div .w-3.h-3 {
+        opacity: 1 !important;
+    }
+</style>
+{% endblock %}

@@ -42,6 +42,16 @@
             <p class="text-4xl font-heading text-gold">{{ stats.total_orders }}</p>
             <p class="text-sm mt-1" style="color: var(--muted);">Commande(s)</p>
         </div>
+        <div class="card text-center" data-testid="stat-candidates-dashboard">
+            <i data-lucide="user-plus" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_candidates }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Candidat(s) ACE</p>
+        </div>
+        <div class="card text-center" data-testid="stat-votes-dashboard">
+            <i data-lucide="vote" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ stats.total_votes }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Vote(s) reçu(s)</p>
+        </div>
     </div>
 
     <div class="gold-divider"></div>
@@ -66,6 +76,20 @@
             <h3 class="text-xl font-heading text-gold mb-2">Voir les résultats</h3>
             <p class="text-sm" style="color: var(--muted);">
                 Consulter les commandes par table en ordre numérique.
+            </p>
+        </a>
+        <a href="{% url 'admin_candidates' %}" class="card block" data-testid="card-candidates">
+            <i data-lucide="user-plus" width="32" height="32" class="text-gold mb-4"></i>
+            <h3 class="text-xl font-heading text-gold mb-2">Gérer les candidats</h3>
+            <p class="text-sm" style="color: var(--muted);">
+                Ajouter les candidats à l'élection du leader ACE avec leur photo.
+            </p>
+        </a>
+        <a href="{% url 'admin_vote_results' %}" class="card block" data-testid="card-vote-results">
+            <i data-lucide="crown" width="32" height="32" class="text-gold mb-4"></i>
+            <h3 class="text-xl font-heading text-gold mb-2">Résultats du vote</h3>
+            <p class="text-sm" style="color: var(--muted);">
+                Consulter les statistiques de l'élection présidentielle.
             </p>
         </a>
     </div>

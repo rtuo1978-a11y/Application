@@ -1,6 +1,6 @@
 """Enregistrement des modèles dans l'interface admin Django."""
 from django.contrib import admin
-from .models import Table, Dish, Guest, Order
+from .models import Table, Dish, Guest, Order, Candidate, Vote
 
 
 @admin.register(Table)
@@ -26,3 +26,15 @@ class GuestAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('guest', 'dish', 'created_at', 'is_locked')
     list_filter = ('dish',)
+
+
+@admin.register(Candidate)
+class CandidateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'vote_count', 'created_at')
+    search_fields = ('name',)
+
+
+@admin.register(Vote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ('candidate', 'created_at')
+    list_filter = ('candidate',)

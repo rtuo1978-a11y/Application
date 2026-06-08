@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Table, Dish, Guest, Order
-from .forms import TableForm, DishForm, GuestForm, LoginForm
+from .models import Table, Dish, Guest, Order, Candidate, Vote
+from .forms import TableForm, DishForm, GuestForm, LoginForm, CandidateForm
 
 
 # ============ Images de la galerie sacrée ============
@@ -160,6 +160,8 @@ def admin_dashboard_view(request):
         'total_dishes': Dish.objects.count(),
         'total_guests': Guest.objects.count(),
         'total_orders': Order.objects.count(),
+        'total_candidates': Candidate.objects.count(),
+        'total_votes': Vote.objects.count(),
     }
     return render(request, 'banquet/admin_dashboard.html', {'stats': stats})
 
@@ -244,3 +246,108 @@ def admin_results_view(request):
         })
     
     return render(request, 'banquet/admin_results.html', {'results': results})
+
+
+# ============ Vote Présidentiel ACE ============
+
+def vote_view(request):
+    """Page de vote présidentiel pour élire le leader ACE."""
+    # S'assurer qu'une session existe
+    if not request.session.session_key:
+        request.session.save()
+    
+    session_key = request.session.session_key
+    candidates = Candidate.objects.all()
+    user_vote = Vote.objects.filter(session_key=session_key).first()
+    
+    return render(request, 'banquet/vote.html', {
+        'candidates': candidates,
+        'user_vote': user_vote,
+        'has_voted': user_vote is not None,
+    })
+
+
+def cast_vote_view(request):
+    """Enregistre le vote d'un utilisateur (une fois par session)."""
+    if request.method != 'POST':
+        return redirect('vote')
+    
+    if not request.session.session_key:
+        request.session.save()
+    session_key = request.session.session_key
+    
+    # Vérifier si l'utilisateur a déjà voté
+    if Vote.objects.filter(session_key=session_key).exists():
+        messages.warning(request, 'Vous avez déjà voté. Une seule voix est autorisée par personne.')
+        return redirect('vote')
+    
+    candidate_id = request.POST.get('candidate_id')
+    if not candidate_id:
+        messages.error(request, 'Veuillez sélectionner un candidat.')
+        return redirect('vote')
+    
+    candidate = get_object_or_404(Candidate, id=candidate_id)
+    Vote.objects.create(candidate=candidate, session_key=session_key)
+    messages.success(request, f'Votre vote pour {candidate.name} a été enregistré. Merci !')
+    return redirect('vote')
+
+
+@user_passes_test(is_admin, login_url='/admin-panel/login/')
+def admin_candidates_view(request):
+    """Gestion des candidats à l'élection ACE."""
+    if request.method == 'POST':
+        form = CandidateForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save()
+            messages.success(request, f'Candidat "{candidate.name}" ajouté avec succès.')
+            return redirect('admin_candidates')
+    else:
+        form = CandidateForm()
+    
+    candidates = Candidate.objects.all().order_by('name')
+    return render(request, 'banquet/admin_candidates.html', {
+        'form': form,
+        'candidates': candidates
+    })
+
+
+@user_passes_test(is_admin, login_url='/admin-panel/login/')
+def admin_delete_candidate_view(request, candidate_id):
+    """Supprimer un candidat."""
+    candidate = get_object_or_404(Candidate, id=candidate_id)
+    if request.method == 'POST':
+        name = candidate.name
+        # Supprimer aussi la photo du système de fichiers
+        if candidate.photo:
+            candidate.photo.delete(save=False)
+        candidate.delete()
+        messages.success(request, f'Candidat "{name}" supprimé.')
+    return redirect('admin_candidates')
+
+
+@user_passes_test(is_admin, login_url='/admin-panel/login/')
+def admin_vote_results_view(request):
+    """Statistiques de vote pour l'élection ACE (visible admin uniquement)."""
+    candidates = Candidate.objects.all()
+    total_votes = Vote.objects.count()
+    
+    results = []
+    for candidate in candidates:
+        count = candidate.vote_count
+        percentage = (count / total_votes * 100) if total_votes > 0 else 0
+        results.append({
+            'candidate': candidate,
+            'count': count,
+            'percentage': round(percentage, 1),
+        })
+    
+    # Trier par nombre de votes décroissant
+    results.sort(key=lambda x: x['count'], reverse=True)
+    
+    winner = results[0] if results and results[0]['count'] > 0 else None
+    
+    return render(request, 'banquet/admin_vote_results.html', {
+        'results': results,
+        'total_votes': total_votes,
+        'winner': winner,
+    })

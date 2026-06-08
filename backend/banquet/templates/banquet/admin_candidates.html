@@ -1,0 +1,114 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Gestion des candidats - Apotheosis ACE{% endblock %}
+
+{% block content %}
+{% include 'banquet/_admin_nav.html' %}
+
+<div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-light text-gold tracking-tight" data-testid="admin-candidates-title">
+            Candidats à l'élection ACE
+        </h1>
+        <p class="text-sm mt-2" style="color: var(--muted);">
+            Ajoutez les candidats avec leur photo et leur nom. Ils apparaîtront sur la page de vote.
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="glass-surface rounded-2xl p-6 space-y-4">
+        <h2 class="text-2xl font-heading text-gold flex items-center gap-2">
+            <i data-lucide="user-plus" width="24" height="24"></i>
+            Ajouter un candidat
+        </h2>
+        <form method="post" enctype="multipart/form-data" class="space-y-4" data-testid="create-candidate-form">
+            {% csrf_token %}
+            
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                    {{ form.name.label }} *
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                    {{ form.photo.label }} *
+                </label>
+                {{ form.photo }}
+                {% if form.photo.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.photo.errors|join:", " }}</p>
+                {% endif %}
+                <p class="text-xs mt-1" style="color: var(--muted);">
+                    Formats acceptés : JPG, PNG. Taille recommandée : carrée (400x400px minimum).
+                </p>
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-white/90 mb-2">
+                    {{ form.description.label }}
+                </label>
+                {{ form.description }}
+            </div>
+
+            <button type="submit" class="btn-primary" data-testid="create-candidate-button">
+                <i data-lucide="plus" width="18" height="18"></i>
+                Ajouter le candidat
+            </button>
+        </form>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-heading text-gold">Candidats inscrits ({{ candidates.count }})</h2>
+        
+        {% if candidates %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="candidates-list">
+                {% for candidate in candidates %}
+                    <div class="glass-surface rounded-2xl overflow-hidden" data-testid="candidate-item-{{ forloop.counter0 }}">
+                        <div class="aspect-square overflow-hidden bg-black/40">
+                            {% if candidate.photo %}
+                                <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i data-lucide="user" width="64" height="64" style="color: var(--muted);"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <h3 class="text-lg font-heading text-gold">{{ candidate.name }}</h3>
+                            {% if candidate.description %}
+                                <p class="text-sm line-clamp-2" style="color: var(--muted);">{{ candidate.description }}</p>
+                            {% endif %}
+                            <p class="text-xs" style="color: var(--muted);">
+                                <i data-lucide="vote" width="12" height="12" class="inline"></i>
+                                {{ candidate.vote_count }} vote(s) reçu(s)
+                            </p>
+                            <form method="post" action="{% url 'admin_delete_candidate' candidate.id %}"
+                                  onsubmit="return confirm('Supprimer le candidat « {{ candidate.name }} » ? Tous ses votes seront perdus.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-danger w-full" data-testid="delete-candidate-{{ forloop.counter0 }}">
+                                    <i data-lucide="trash-2" width="14" height="14" class="inline"></i>
+                                    Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card text-center py-12">
+                <i data-lucide="users" width="48" height="48" class="mx-auto mb-4" style="color: var(--muted);"></i>
+                <p style="color: var(--muted);">Aucun candidat inscrit pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

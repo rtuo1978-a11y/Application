@@ -30,6 +30,26 @@
                         Galerie Sacrée
                     </a>
                 </div>
+
+                <!-- Section Vote Présidentiel ACE -->
+                <div class="pt-12">
+                    <div class="glass-surface rounded-2xl p-8 max-w-2xl mx-auto space-y-4">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gold/10 border-2 border-gold mb-2">
+                            <i data-lucide="crown" width="24" height="24" class="text-gold"></i>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-heading text-gold">Vote Présidentiel</h2>
+                        <p class="text-sm verse-text" style="color: var(--muted);">
+                            « Que celui qui est le plus grand parmi vous soit votre serviteur » - Matthieu 23:11
+                        </p>
+                        <p class="text-sm text-white/80">
+                            Participez à l'élection du prochain leader ACE. Une seule voix par personne.
+                        </p>
+                        <a href="{% url 'vote' %}" class="btn-primary inline-flex" data-testid="vote-link">
+                            <i data-lucide="vote" width="20" height="20"></i>
+                            Voter maintenant
+                        </a>
+                    </div>
+                </div>
                 
                 <div class="pt-12">
                     <a href="{% url 'admin_login' %}" class="text-sm text-white/50 hover:text-gold transition-colors" data-testid="admin-link">

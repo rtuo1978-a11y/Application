@@ -30,15 +30,17 @@ Application de gestion de banquet pour une église. L'admin enregistre des table
 
 ## What's been implemented (08/06/2026)
 - ✅ Configuration Django (settings, urls, wsgi)
-- ✅ Modèles : Table, Dish, Guest, Order
-- ✅ Vues publiques : welcome, register, dish_selection, gallery
-- ✅ Vues admin : login, logout, dashboard, tables, menu, results
-- ✅ Formulaires Django (TableForm, DishForm, GuestForm, LoginForm)
-- ✅ 10 templates HTML avec design or/vert sapin
+- ✅ Modèles : Table, Dish, Guest, Order, **Candidate, Vote**
+- ✅ Vues publiques : welcome, register, dish_selection, gallery, **vote, cast_vote**
+- ✅ Vues admin : login, logout, dashboard, tables, menu, results, **candidates, vote_results**
+- ✅ Formulaires Django (TableForm, DishForm, GuestForm, LoginForm, **CandidateForm avec ImageField**)
+- ✅ 13 templates HTML avec design or/vert sapin
 - ✅ Timer JavaScript pour décompte 2 minutes
 - ✅ Galerie de 4 images religieuses avec versets
+- ✅ **Vote présidentiel ACE** : candidats avec photo, vote unique par session, statistiques admin
+- ✅ Configuration MEDIA pour uploads de photos
 - ✅ Commande seed_admin pour création automatique admin
-- ✅ Migrations SQLite appliquées
+- ✅ Migrations SQLite appliquées (incluant Candidate + Vote)
 - ✅ Documentation README.md
 - ✅ Guide de déploiement PythonAnywhere
 

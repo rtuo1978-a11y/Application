@@ -22,6 +22,14 @@
                 <i data-lucide="eye" width="16" height="16"></i>
                 Résultats
             </a>
+            <a href="{% url 'admin_candidates' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_candidates' %}active{% endif %}" data-testid="nav-candidates">
+                <i data-lucide="users" width="16" height="16"></i>
+                Candidats
+            </a>
+            <a href="{% url 'admin_vote_results' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_vote_results' %}active{% endif %}" data-testid="nav-vote-results">
+                <i data-lucide="crown" width="16" height="16"></i>
+                Vote
+            </a>
             <form method="post" action="{% url 'admin_logout' %}" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="nav-link" data-testid="logout-button" style="color: #ef4444;">

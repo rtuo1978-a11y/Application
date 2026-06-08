@@ -2,7 +2,7 @@
 Formulaires Django pour l'application Apotheosis ACE.
 """
 from django import forms
-from .models import Table, Dish, Guest
+from .models import Table, Dish, Guest, Candidate
 
 
 class TableForm(forms.ModelForm):
@@ -105,3 +105,33 @@ class LoginForm(forms.Form):
             'data-testid': 'admin-password-input'
         })
     )
+
+
+class CandidateForm(forms.ModelForm):
+    """Formulaire pour ajouter un candidat à l'élection ACE."""
+    class Meta:
+        model = Candidate
+        fields = ['name', 'photo', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Nom complet du candidat',
+                'data-testid': 'candidate-name-input'
+            }),
+            'photo': forms.FileInput(attrs={
+                'class': 'form-input',
+                'accept': 'image/*',
+                'data-testid': 'candidate-photo-input'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-input',
+                'placeholder': 'Présentation du candidat (programme, parcours...)',
+                'rows': 3,
+                'data-testid': 'candidate-description-input'
+            }),
+        }
+        labels = {
+            'name': 'Nom du candidat',
+            'photo': 'Photo (JPG, PNG)',
+            'description': 'Description / Programme (optionnel)',
+        }

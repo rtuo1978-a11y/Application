@@ -109,13 +109,16 @@ application = get_wsgi_application()
 Dans la section **"Virtualenv"** :
 - Saisir : `/home/VOTRE-USER/apotheosis-ace/backend/venv`
 
-## 10. Configurer les fichiers statiques
+## 10. Configurer les fichiers statiques et médias
 
-Dans la section **"Static files"**, ajouter :
+Dans la section **"Static files"**, ajouter deux entrées :
 
 | URL | Directory |
 |-----|-----------|
 | `/static/` | `/home/VOTRE-USER/apotheosis-ace/backend/staticfiles` |
+| `/media/` | `/home/VOTRE-USER/apotheosis-ace/backend/media` |
+
+**Important** : la deuxième ligne (`/media/`) est essentielle pour que les photos des candidats du vote ACE s'affichent correctement.
 
 ## 11. Ajuster les paramètres Django pour la production
 

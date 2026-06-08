@@ -1,0 +1,111 @@
+{% extends 'banquet/base.html' %}
+
+{% block title %}Résultats du vote - Apotheosis ACE{% endblock %}
+
+{% block content %}
+{% include 'banquet/_admin_nav.html' %}
+
+<div class="max-w-6xl mx-auto px-6 py-12 space-y-8">
+    <div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-light text-gold tracking-tight" data-testid="vote-results-title">
+            Résultats du vote ACE
+        </h1>
+        <p class="text-sm verse-text mt-2" style="color: var(--muted);">
+            « L'Éternel a choisi un homme selon son cœur » - 1 Samuel 13:14
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Statistiques générales -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="card text-center" data-testid="stat-total-votes">
+            <i data-lucide="vote" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ total_votes }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Vote(s) total</p>
+        </div>
+        <div class="card text-center" data-testid="stat-candidates">
+            <i data-lucide="users" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            <p class="text-4xl font-heading text-gold">{{ results|length }}</p>
+            <p class="text-sm mt-1" style="color: var(--muted);">Candidat(s)</p>
+        </div>
+        <div class="card text-center" data-testid="stat-winner">
+            <i data-lucide="crown" width="32" height="32" class="mx-auto text-gold mb-3"></i>
+            {% if winner %}
+                <p class="text-lg font-heading text-gold leading-tight">{{ winner.candidate.name }}</p>
+                <p class="text-sm mt-1" style="color: var(--muted);">En tête ({{ winner.percentage }}%)</p>
+            {% else %}
+                <p class="text-lg" style="color: var(--muted);">Aucun vote</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Classement -->
+    {% if results %}
+        <div class="glass-surface rounded-2xl p-6 space-y-6">
+            <h2 class="text-2xl font-heading text-gold">Classement des candidats</h2>
+            
+            <div class="space-y-4" data-testid="vote-results-list">
+                {% for result in results %}
+                    <div class="space-y-3" data-testid="vote-result-{{ forloop.counter0 }}">
+                        <div class="flex items-center gap-4">
+                            <!-- Rang -->
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center 
+                                        {% if forloop.first and result.count > 0 %}bg-gold text-black{% else %}bg-black/40 border border-gold/30 text-gold{% endif %}">
+                                <span class="text-xl font-heading font-bold">{{ forloop.counter }}</span>
+                            </div>
+                            
+                            <!-- Photo -->
+                            <div class="flex-shrink-0 w-16 h-16 rounded-full overflow-hidden bg-black/40 border-2 border-gold/30">
+                                {% if result.candidate.photo %}
+                                    <img src="{{ result.candidate.photo.url }}" alt="{{ result.candidate.name }}" 
+                                         class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i data-lucide="user" width="32" height="32" style="color: var(--muted);"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-baseline justify-between gap-2 flex-wrap">
+                                    <h3 class="text-lg font-heading text-white truncate">
+                                        {{ result.candidate.name }}
+                                        {% if forloop.first and result.count > 0 %}
+                                            <i data-lucide="crown" width="16" height="16" class="inline text-gold ml-1"></i>
+                                        {% endif %}
+                                    </h3>
+                                    <div class="text-right">
+                                        <span class="text-xl font-heading text-gold">{{ result.count }}</span>
+                                        <span class="text-sm" style="color: var(--muted);">vote(s) · {{ result.percentage }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Barre de progression -->
+                        <div class="ml-16 h-3 bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-500 rounded-full" 
+                                 style="width: {{ result.percentage }}%; background: linear-gradient(to right, var(--gold), #F3E5AB);">
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="card text-center py-12">
+            <i data-lucide="vote" width="48" height="48" class="mx-auto mb-4" style="color: var(--muted);"></i>
+            <p style="color: var(--muted);">Aucun candidat inscrit. Ajoutez des candidats pour démarrer le vote.</p>
+            <a href="{% url 'admin_candidates' %}" class="btn-secondary inline-flex mt-4">
+                Gérer les candidats
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

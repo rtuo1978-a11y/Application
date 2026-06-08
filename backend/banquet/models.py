@@ -102,3 +102,50 @@ class Order(models.Model):
 
     def __str__(self):
         return f'{self.guest.name} - {self.dish.name}'
+
+
+class Candidate(models.Model):
+    """Modèle représentant un candidat à l'élection du leader ACE."""
+    name = models.CharField(max_length=200, verbose_name='Nom du candidat')
+    photo = models.ImageField(
+        upload_to='candidates/',
+        verbose_name='Photo'
+    )
+    description = models.TextField(blank=True, verbose_name='Description / Programme')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Candidat'
+        verbose_name_plural = 'Candidats'
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def vote_count(self):
+        """Retourne le nombre total de votes reçus."""
+        return self.votes.count()
+
+
+class Vote(models.Model):
+    """Modèle représentant un vote pour un candidat.
+    
+    Identifié par session_key pour empêcher les votes multiples
+    depuis le même navigateur.
+    """
+    candidate = models.ForeignKey(
+        Candidate,
+        on_delete=models.CASCADE,
+        related_name='votes',
+        verbose_name='Candidat'
+    )
+    session_key = models.CharField(max_length=40, unique=True, verbose_name='Clé de session')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Vote'
+        verbose_name_plural = 'Votes'
+
+    def __str__(self):
+        return f'Vote pour {self.candidate.name}'
