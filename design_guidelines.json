@@ -1,0 +1,111 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 5 (Luxury) merged with Archetype 1 (Organic & Earthy)",
+  "concept": "Apotheosis ACE - A majestic, divine, and elegant church party management system.",
+  "language": "fr",
+  "colors": {
+    "primary": "#D4AF37", 
+    "primary_hover": "#F3E5AB",
+    "background": "#0F2F20", 
+    "surface": "#0A0A0A",
+    "surface_glass": "rgba(10, 10, 10, 0.6)",
+    "text_main": "#FFFFFF",
+    "text_muted": "#A3B8B0",
+    "border": "rgba(212, 175, 55, 0.3)",
+    "error": "#991B1B"
+  },
+  "typography": {
+    "headings": "Cormorant Garamond",
+    "body": "Outfit",
+    "rules": [
+      "Headings must use tight letter spacing (tracking-tight) and font-light or font-black to create tension.",
+      "Never use Inter or generic sans for headings.",
+      "Body text should be highly readable.",
+      "Max heading size text-5xl to text-6xl."
+    ]
+  },
+  "spacing_and_layout": {
+    "general": "Generous Spacing Philosophy (p-6, p-8, p-12). Use high padding inside containers with borders.",
+    "grids": "Bento Grid Protocol for the Comic Gallery (Mode A: The Tetris Grid). Admin dashboards use Mode B: The Control Room Grid.",
+    "alignment": "Optical alignment over geometrical. Left-align dense content, center-align hero text only if it improves visual rhythm.",
+    "components": "Custom HTML/Tailwind for Guest Welcome & Gallery; Shadcn/UI for Admin Dashboard and Forms (heavily customized to dark green/gold)."
+  },
+  "surface_strategies": {
+    "guest_cards": "Glassmorphism (The Crystal Variant). backdrop-blur-xl, bg-black/40, border border-gold/30. Soft ambient shadow.",
+    "admin_dashboard": "Grid Borders (Technical Look). Expose the skeleton, minimal borders.",
+    "buttons": "Flat gold background for primary, black text. Hover: Lighter gold. Secondary buttons: transparent with gold border."
+  },
+  "animations": {
+    "micro_interactions": "Hover states on all buttons and cards. Slight lift (-translate-y-1) and shadow increase.",
+    "page_transitions": "Fade and slight upward motion (framer-motion or simple CSS transition)."
+  },
+  "media": {
+    "backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1728594120312-a2e7b714f76c",
+        "description": "Large golden castle in paradise with water, used for the main guest welcome background (with heavy fir-green/black overlay)",
+        "category": "hero_background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1679254205082-ba0b1d469ac4",
+        "description": "Golden castle spires, used for alternate page backgrounds",
+        "category": "secondary_background"
+      }
+    ],
+    "gallery_comic": [
+      {
+        "url": "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457",
+        "description": "Baroque ceiling fresco, use in the religious comic gallery",
+        "category": "religious_gallery"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1584727638096-042c45049ebe",
+        "description": "Man in brown robe praying/painting, use in gallery",
+        "category": "religious_gallery"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1532337414163-b344fcae7bc2",
+        "description": "Lamb on bible cross illustration, use in gallery",
+        "category": "religious_gallery"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1583119912267-cc97c911e416",
+        "description": "Fresco with cherubs, use in gallery",
+        "category": "religious_gallery"
+      }
+    ],
+    "admin_assets": [
+      {
+        "url": "https://images.unsplash.com/photo-1714773804930-56124267152b",
+        "description": "Long elegant table, used as a subtle banner or card header in the admin dashboard",
+        "category": "admin_banner"
+      }
+    ]
+  },
+  "components_instructions": {
+    "welcome_page": "Hero section with background image (hero_background) covered by a bg-black/60 overlay to ensure text readability. Include French verses. Center aligned. Button to register.",
+    "registration_form": "Shadcn Form, highly customized. Use Crystal Glassmorphism surface. data-testid='guest-registration-form'.",
+    "dish_selection": "Display menu based on table number. Once selected, show a 2-minute countdown timer. During this time, the user can edit. After 2 mins, lock the selection. data-testid='dish-selection-form'.",
+    "comic_gallery": "A masonry or bento grid displaying the religious images mixed with textual verses. Create an integrated storytelling scroll experience.",
+    "admin_login": "Simple email/password login form. data-testid='admin-login-form'.",
+    "admin_dashboard": "Tabs or Sidebar layout. Tab 1: Manage Tables (Add table, specify places). Tab 2: Manage Menu. Tab 3: View Results.",
+    "admin_results": "List of tables in numerical order. Each table shows guests and their chosen dishes (e.g., '1 - dish such-and-such'). Use Shadcn Accordion or Card layout for each table. data-testid='admin-results-panel'."
+  },
+  "testing": {
+    "attributes_required": true,
+    "instructions": "All interactive elements, forms, inputs, and major containers MUST include a data-testid attribute in kebab-case (e.g., data-testid='submit-order-button')."
+  },
+  "tech_stack": {
+    "frontend": "React.js (.js files), Tailwind CSS, Shadcn/ui (customized), Framer Motion (optional for gallery)",
+    "backend": "Django, Python",
+    "auth": "Django standard auth for Admin"
+  },
+  "instructions_to_main_agent": [
+    "Build the frontend using React (.js) and Tailwind CSS based on these exact colors and fonts.",
+    "Create the Django backend to support the guest registration, menu management, and 2-minute dish locking logic.",
+    "Ensure all copy is in French, incorporating religious verses subtly into the welcome page and gallery.",
+    "Incorporate the provided media URLs. DO NOT USE PLACEHOLDERS.",
+    "Follow the Anti-AI Designer E1 principles: Avoid pure center alignment for standard content, use generous padding, and ensure high contrast.",
+    "Ensure the timer logic accurately prevents updates to dish choice after 2 minutes."
+  ]
+}
