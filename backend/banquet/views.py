@@ -10,29 +10,8 @@ from .models import Table, Dish, Guest, Order, Candidate, Vote
 from .forms import TableForm, DishForm, GuestForm, LoginForm, CandidateForm
 
 
-# ============ Images de la galerie sacrée ============
-GALLERY_IMAGES = [
-    {
-        'url': 'https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457',
-        'description': 'Fresque de plafond baroque',
-        'verse': '« Car Dieu a tant aimé le monde » - Jean 3:16'
-    },
-    {
-        'url': 'https://images.unsplash.com/photo-1584727638096-042c45049ebe',
-        'description': 'Moine en prière',
-        'verse': '« Heureux les cœurs purs, car ils verront Dieu » - Matthieu 5:8'
-    },
-    {
-        'url': 'https://images.unsplash.com/photo-1532337414163-b344fcae7bc2',
-        'description': 'Agneau sur la Bible',
-        'verse': '« Voici l\'Agneau de Dieu » - Jean 1:29'
-    },
-    {
-        'url': 'https://images.unsplash.com/photo-1583119912267-cc97c911e416',
-        'description': 'Fresque avec chérubins',
-        'verse': '« Les anges se réjouissent dans le ciel » - Luc 15:10'
-    },
-]
+# ============ Images de la galerie (constante non utilisée pour l'instant) ============
+GALLERY_IMAGES = []
 
 
 def is_admin(user):
@@ -45,11 +24,6 @@ def is_admin(user):
 def welcome_view(request):
     """Page d'accueil du banquet."""
     return render(request, 'banquet/welcome.html')
-
-
-def gallery_view(request):
-    """Galerie d'images religieuses."""
-    return render(request, 'banquet/gallery.html', {'gallery': GALLERY_IMAGES})
 
 
 def register_guest_view(request):

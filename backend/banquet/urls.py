@@ -7,7 +7,6 @@ urlpatterns = [
     path('', views.welcome_view, name='welcome'),
     path('register/', views.register_guest_view, name='register'),
     path('menu/<int:guest_id>/', views.dish_selection_view, name='dish_selection'),
-    path('gallery/', views.gallery_view, name='gallery'),
     path('api/order/<int:order_id>/status/', views.order_status_api, name='order_status_api'),
     
     # ===== Vote présidentiel ACE =====
